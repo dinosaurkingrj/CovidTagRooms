@@ -49,7 +49,7 @@ def update_room(data, status):
 
 @app.route('/')
 def index():
-    return "test!"
+    return ('index.html')
 
 @app.route('/room_created', methods=['POST'])
 def room_created():
