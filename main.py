@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from datetime import datetime
-
+import requests
 app = Flask(__name__)
 
 open_rooms = {}
