@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, render_template
 from datetime import datetime
 import requests
-app = Flask(__name__)
+
+app = Flask(__name__, template_folder='template')
 
 open_rooms = {}
 
@@ -17,15 +18,15 @@ def validate_data(data):
   room_code = data.get('room_code')
   region = data.get('region')
   username = data.get("username")
-
+  
   if room_code is not None:
       if "DAMIAN" in room_code:
           notify_discord(f"<@&{DISCORD_ROLE_ID}> DAMIAN IS IN THE ROOM {room_code}")
-
+  
   if username is not None:
       if "DAMIAN" in username:
           notify_discord(f"<@&{DISCORD_ROLE_ID}> DAMIAN IS IN THE CODE {room_code}")
-
+  
   return room_code and region
 
 def handle_request(data):
