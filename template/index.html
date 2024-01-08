@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <title>OriginalTagRooms</title>
+    <style>
+        #tabs {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #tabs li {
+            float: left;
+            cursor: pointer;
+            padding: 10px;
+            margin: 0;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #openRoomsList {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="name">Original Tag Rooms</h1>
+    <ul id="tabs">
+
+        <li id="publicTab" onclick="updateOpenRoomsList('public')">Public Rooms</li>
+
+        <li id="privateTab" onclick="updateOpenRoomsList('private')">Private Rooms</li>
+
+    </ul>
+
+    <ul id="openRoomsList"></ul>
+
+
+
+    <script>
+        var currentTab = 'public';
+
+        function updateOpenRoomsList(type) {
+            currentTab = type;
+            fetchAndUpdateRooms();
+        }
+
+        function fetchAndUpdateRooms() {
+            $.get("/get_open_rooms", function(data) {
+                console.log("Received data:", data);
+                displayRooms(data);
+            });
+        }
+
+        function displayRooms(allRoomsData) {
+            $("#openRoomsList").empty();
+            allRoomsData.forEach(function(room) {
+                var isPublic = room.room_code.length === 4;
+                var isRoomVisible = room.status === 'created' || room.status === 'joined';
+
+                if (currentTab === 'public' && isPublic && isRoomVisible) {
+                    var listItem = "<li>" + room.room_code + " - " + room.region +
+                                    " - Status: " + room.status +
+                                    " - Created at: " + room.timestamp + "</li>";
+                    $("#openRoomsList").append(listItem);
+                } else if (currentTab === 'private' && !isPublic && isRoomVisible) {
+                    var listItem = "<li>" + room.room_code + " - " + room.region +
+                                    " - Status: " + room.status +
+                                    " - Created at: " + room.timestamp + "</li>";
+                    $("#openRoomsList").append(listItem);
+                }
+
+            });
+        }
+
+        setInterval(fetchAndUpdateRooms, 5000);
+
+        $(document).ready(function() {
+            fetchAndUpdateRooms();
+        });
+    </script>
+
+</body>
+</html>
